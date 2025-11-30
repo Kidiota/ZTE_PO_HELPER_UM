@@ -74,7 +74,6 @@ def get_info(raw):
     j = 0
     allData = []
     while j < i:
-        print(raw[j][0])
         if len(raw[j][0]) == 3:
             lineOfInfo = raw[j][0][2].split("\n")
             PONUM = lineOfInfo[0]
@@ -105,7 +104,58 @@ def get_info(raw):
                 f = f - 1
                 c = c + 1
             data = [PONUM, DATE, OurRef]
+        
+        #插入子项目
+        #PSOS = raw[j+1].index(['Item', 'Material', '', 'Description', 'Quantity', 'UOM', 'Unit Pr'])
+        #print(raw[j+1][200:])
+        #print("\n\n\n")
+        subItems = []
+        item = 0
+
+        itemNum = []
+        material = []
+        description = []
+        quantity = []
+        UOM = []
+
+        print(raw[j+1])
+        print("\n\n\n")
+        while item < len(raw[j+1]):
+            d = 0
+            if raw[j+1][item][d][0:2] == '00':
+                itemNum = raw[j+1][item][d]
+                d = d + 1
+                if raw[j+1][item][d] != '':
+                    material = raw[j+1][item][d]
+                    d = d + 1
+                    if raw[j+1][item][d] != '':
+                        r = d
+                        description = raw[j+1][item][r]
+                        while not raw[j+1][item][r+1][0].isdigit():
+                            description = description + raw[j+1][item][d+1]
+                            r = r + 1
+                            if r + 1 >= len(raw[j+1][item]) - 1:
+                                break
+                        if raw[j+1][item+1][0:1] == ['','']:
+                            l = 0
+                            while raw[j+1][item+1][l] != '':
+                                description = description + raw[j+1][item+1][l]
+                                l = l + 1
+                        d = d + 1
+                        if raw[j+1][item][d] != '':
+                            quantity = raw[j+1][item][d]
+                            d = d + 1
+                            if raw[j+1][item][d] != '':
+                                UOM = raw[j+1][item][d]
+                                d = d + 1
+            subItems = subItems + [[itemNum, material, description, quantity, UOM]]
+                                        
+            item = item + 1
+
+        data = data + [subItems]
+        
         allData = allData + [data]
+        #print(allData)
         j = j + 2
     
     return(allData)
